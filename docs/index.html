@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InstaForm — post consistently, the honest way</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #14171a; --muted: #5b6470;
+    --card: #f6f8fa; --line: #e3e8ee; --accent: #6d5efc; --accent-fg: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e1116; --fg: #e8ecf1; --muted: #9aa4b2;
+      --card: #171b22; --line: #262c36; --accent: #8b7dff; --accent-fg: #0e1116;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+         background: var(--bg); color: var(--fg); }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 20px; }
+  header { padding: 72px 0 40px; text-align: center; }
+  .badge { display: inline-block; font-size: 13px; letter-spacing: .04em; text-transform: uppercase;
+           color: var(--accent); font-weight: 700; }
+  h1 { font-size: clamp(30px, 6vw, 48px); line-height: 1.1; margin: 14px 0 12px; letter-spacing: -0.02em; }
+  .sub { font-size: 19px; color: var(--muted); max-width: 620px; margin: 0 auto 28px; }
+  .cta { display: inline-block; background: var(--accent); color: var(--accent-fg);
+         padding: 13px 26px; border-radius: 10px; text-decoration: none; font-weight: 650; }
+  .cta.ghost { background: transparent; color: var(--fg); border: 1px solid var(--line); margin-left: 8px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; margin: 8px 0 40px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
+  .card h3 { margin: 0 0 6px; font-size: 17px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+  section { padding: 26px 0; }
+  h2 { font-size: 24px; letter-spacing: -0.01em; margin: 0 0 16px; }
+  pre { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+        padding: 16px; overflow-x: auto; font-size: 14px; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  ul.clean { list-style: none; padding: 0; }
+  ul.clean li { padding: 8px 0 8px 28px; position: relative; color: var(--fg); }
+  ul.clean li::before { content: "✓"; position: absolute; left: 0; color: var(--accent); font-weight: 800; }
+  ul.no li::before { content: "✕"; color: #d1495b; }
+  footer { border-top: 1px solid var(--line); margin-top: 40px; padding: 28px 0 56px;
+           color: var(--muted); font-size: 14px; text-align: center; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="badge">Content toolkit for creators</span>
+    <h1>Post consistently. Stay yours.</h1>
+    <p class="sub">InstaForm drafts your Instagram posts — sources royalty-free media,
+      arranges your caption, curates your hashtags — and publishes through the
+      official API. One account you own. No farming, no fakery.</p>
+    <a class="cta" href="https://github.com/daturadev/ig-builder">Get it on GitHub</a>
+    <a class="cta ghost" href="#how">See how it works</a>
+  </header>
+
+  <div class="grid">
+    <div class="card"><h3>🖼️ Real media</h3><p>Royalty-free photos & video from Pexels, with creator attribution built in.</p></div>
+    <div class="card"><h3>✍️ Your voice</h3><p>You write the caption; the tool arranges it and adds hashtags you curate.</p></div>
+    <div class="card"><h3>📝 Review first</h3><p>Every post is saved as a draft. A human approves before anything ships.</p></div>
+    <div class="card"><h3>🚀 Official API</h3><p>Opt-in publishing via Instagram's Graph Content Publishing API.</p></div>
+  </div>
+
+  <section id="how">
+    <h2>Three commands to your first draft</h2>
+    <pre><code>python3 -m pip install -r requirements.txt
+cp .env.example .env        # add your free Pexels key
+python3 main.py --keyword sunrise --body "Chasing first light."</code></pre>
+    <p style="color:var(--muted)">You get a reviewable draft file. Happy with it? Re-run with <code>--publish</code>.</p>
+  </section>
+
+  <section>
+    <h2>Built to last</h2>
+    <div class="grid">
+      <div>
+        <ul class="clean">
+          <li>One account, genuinely yours</li>
+          <li>Real content, real audience</li>
+          <li>Inside the platform's Terms</li>
+          <li>Human review on every post</li>
+        </ul>
+      </div>
+      <div>
+        <ul class="clean no">
+          <li>No mass-created accounts</li>
+          <li>No selling accounts or credentials</li>
+          <li>No fake engagement</li>
+          <li>No detection evasion</li>
+        </ul>
+      </div>
+    </div>
+    <p style="color:var(--muted)">Why the "no" list? Because that's the stuff that gets accounts wiped
+      right when they're finally worth something. Sustainable beats clever.</p>
+  </section>
+
+  <footer>
+    Open source · <a href="https://github.com/daturadev/ig-builder">daturadev/ig-builder</a><br>
+    Media by <a href="https://www.pexels.com">Pexels</a> creators. Publishing via Meta's official Graph API.
+  </footer>
+</div>
+</body>
+</html>

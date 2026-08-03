@@ -1,0 +1,13 @@
+# Curated hashtags you control. One per line; the leading '#' is optional.
+# Lines starting with "# " (hash + space) are comments and are ignored.
+# Edit these to match YOUR niche — generic tags rarely help reach.
+photography
+naturephotography
+photooftheday
+instagood
+travelgram
+landscape
+sunrise
+goldenhour
+minimalism
+mood

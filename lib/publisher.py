@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import requests
 
+from .models import PostRequest, PublishResult
+
 DEFAULT_TIMEOUT = 60
 
 
@@ -78,3 +80,28 @@ def publish_container(
     if not media_id:
         raise PublishError(f"Publish returned no media id: {payload}")
     return media_id
+
+
+def publish(
+    ig_user_id: str,
+    access_token: str,
+    post: PostRequest,
+    version: str = "v20.0",
+) -> PublishResult:
+    """Publish a post to Instagram. Returns a PublishResult (never raises).
+
+    Instagram requires media — a text-only post is skipped.
+    """
+    if not (post.has_photo or post.has_video):
+        return PublishResult(
+            "instagram", ok=False, detail="Instagram needs media; none provided.", skipped=True
+        )
+    kind = "video" if post.has_video else "photo"
+    try:
+        container_id = create_container(
+            ig_user_id, access_token, post.media_url, post.body, kind=kind, version=version
+        )
+        media_id = publish_container(ig_user_id, access_token, container_id, version=version)
+        return PublishResult("instagram", ok=True, detail=media_id)
+    except (PublishError, requests.RequestException) as exc:
+        return PublishResult("instagram", ok=False, detail=str(exc))

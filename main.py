@@ -23,14 +23,15 @@ from __future__ import annotations
 import argparse
 import sys
 
-from lib import captions, drafts, media, publisher
+from lib import captions, crosspost, drafts, media
 from lib.config import Config, ConfigError
+from lib.models import PostRequest
 
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="instaform",
-        description="Draft and optionally publish Instagram posts for an account you own.",
+        description="Draft and optionally publish posts across platforms for accounts you own.",
     )
     p.add_argument("--keyword", required=True, help="Topic used to source media (e.g. 'sunrise').")
     p.add_argument(
@@ -45,9 +46,21 @@ def build_parser() -> argparse.ArgumentParser:
         help="Media type to source from Pexels (default: photo).",
     )
     p.add_argument(
+        "--title",
+        default=None,
+        help="Optional video title (used by YouTube; ignored elsewhere).",
+    )
+    p.add_argument(
         "--publish",
         action="store_true",
-        help="Publish to Instagram after drafting (requires credentials). Off by default.",
+        help="Publish after drafting (requires per-platform credentials). Off by default.",
+    )
+    p.add_argument(
+        "--platforms",
+        default="instagram",
+        help="Comma-separated targets for --publish: "
+        + ",".join(crosspost.ALL_PLATFORMS)
+        + " (default: instagram). Platforms without credentials are skipped.",
     )
     return p
 
@@ -93,31 +106,18 @@ def run(argv: list[str] | None = None) -> int:
         print("\n[i] Review the draft, then re-run with --publish to post it.")
         return 0
 
-    # 4. Publish (opt-in).
-    try:
-        ig_user_id, token = config.require_publishing()
-    except ConfigError as exc:
-        print(f"[!] {exc}", file=sys.stderr)
-        return 2
-
-    try:
-        container_id = publisher.create_container(
-            ig_user_id,
-            token,
-            media_url=asset.url,
-            caption=caption.render(),
-            kind=asset.kind,
-            version=config.graph_api_version,
-        )
-        media_id = publisher.publish_container(
-            ig_user_id, token, container_id, version=config.graph_api_version
-        )
-    except publisher.PublishError as exc:
-        print(f"[!] {exc}", file=sys.stderr)
-        return 1
-
-    print(f"[+] Published. Instagram media id: {media_id}")
-    return 0
+    # 4. Publish (opt-in) — fan out to the selected platforms.
+    platforms = tuple(p.strip() for p in args.platforms.split(",") if p.strip())
+    post = PostRequest(
+        body=caption.render(),
+        media_url=asset.url,
+        media_kind=asset.kind,
+        title=args.title,
+    )
+    report = crosspost.crosspost(config, post, platforms=platforms)
+    print("\n[i] Publish results:")
+    print(report.render())
+    return 1 if report.any_failed else 0
 
 
 if __name__ == "__main__":

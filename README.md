@@ -1,18 +1,31 @@
 # InstaForm
 
-**A content-drafting toolkit for creators who run their own Instagram account.**
+**A content-drafting toolkit for creators who run their own social accounts.**
 
 InstaForm helps you post consistently without cutting corners. It sources
 royalty-free media, arranges *your* caption with a curated hashtag set, and
-saves a reviewable draft. When you're happy with it, you can publish through
-Instagram's official Graph API — for an account **you own and operate**.
+saves a reviewable draft. When you're happy with it, you can fan the post out
+through the platforms' **official APIs** — for accounts **you own and operate**.
 
 ### What it does
 
 - 🖼️ **Sources media** from [Pexels](https://www.pexels.com/api/) (royalty-free, with creator attribution baked in).
 - ✍️ **Composes captions** from your own words plus hashtags you curate.
 - 📝 **Saves drafts** to `drafts/` so a human reviews every post before it goes out.
-- 🚀 **Publishes (opt-in)** via the official Instagram Graph Content Publishing API.
+- 🚀 **Publishes (opt-in)** across **Instagram, Threads, YouTube, and TikTok** via each platform's official API.
+
+### Supported platforms
+
+| Platform | API | Notes |
+| --- | --- | --- |
+| Instagram | Graph Content Publishing | Business/Creator account + Facebook Page |
+| Threads | Threads API | Same Meta app as Instagram |
+| YouTube | Data API v3 | Video uploads; ~6/day on default quota |
+| TikTok | Content Posting API | Inbox-draft mode until your app is audited |
+
+Setting these up is a one-time job per platform — see
+[`docs/SETUP_APIS.md`](docs/SETUP_APIS.md). Platforms you haven't configured are
+simply skipped, so you can add them one at a time.
 
 ### What it does *not* do
 
@@ -42,30 +55,37 @@ Draft a reel instead of a photo:
 python3 main.py --keyword coffee --body "Slow mornings." --media video
 ```
 
-Draft **and** publish (requires publishing credentials, see below):
+Draft **and** publish to one or more platforms (requires credentials, see below):
 
 ```bash
+# Publish to Instagram only (the default target)
 python3 main.py --keyword sunrise --body "First light." --publish
+
+# Fan a video out to every platform you've configured
+python3 main.py --keyword surf --body "Dawn patrol." --media video \
+    --publish --platforms instagram,threads,youtube,tiktok
 ```
 
-Secrets are read from your environment / `.env` — never passed as CLI flags,
-so they don't leak into shell history or process lists.
+Platforms without credentials are skipped with a note (not a failure), so you
+can wire them up one at a time. Secrets are read from your environment /
+`.env` — never passed as CLI flags, so they don't leak into shell history or
+process lists.
 
 ## Configuration
+
+Set up whichever platforms you want — full walkthrough in
+[`docs/SETUP_APIS.md`](docs/SETUP_APIS.md).
 
 | Variable | Required for | How to get it |
 | --- | --- | --- |
 | `PEXELS_API_KEY` | drafting | Free at <https://www.pexels.com/api/> |
-| `IG_USER_ID` | publishing | Your Instagram Business/Creator account ID |
-| `IG_ACCESS_TOKEN` | publishing | Long-lived Graph API token for a Page you own |
+| `IG_USER_ID`, `IG_ACCESS_TOKEN` | Instagram | Business/Creator account + Page |
+| `THREADS_USER_ID`, `THREADS_ACCESS_TOKEN` | Threads | Same Meta app as Instagram |
+| `YOUTUBE_CLIENT_ID/SECRET/REFRESH_TOKEN` | YouTube | Google Cloud OAuth client |
+| `TIKTOK_ACCESS_TOKEN` | TikTok | TikTok developer app |
 | `GRAPH_API_VERSION` | optional | Defaults to `v20.0` |
 
-### Publishing setup
-
-Publishing uses Meta's official [Content Publishing API](https://developers.facebook.com/docs/instagram-api/guides/content-publishing).
-You need an Instagram **Business or Creator** account connected to a Facebook
-Page, and a long-lived access token with the right permissions. Curate your
-own tag lists in `lib/hashtags.txt`.
+Curate your own hashtag lists in `lib/hashtags.txt`.
 
 ## Curate your hashtags
 
